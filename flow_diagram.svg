@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="420" viewBox="0 0 1100 420">
+  <style>
+    .box { fill:#f3f7ff; stroke:#2b6cb0; stroke-width:2; rx:8; }
+    .small { font:12px sans-serif; fill:#0b2240 }
+    .title { font:16px sans-serif; fill:#042a53; font-weight:600 }
+    .arrow { stroke:#333; stroke-width:2; marker-end:url(#arrowhead); }
+  </style>
+
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#333" />
+    </marker>
+  </defs>
+
+  <text x="20" y="28" class="title">Project Flow: Phishing Detection Prototype</text>
+
+  <!-- Data -->
+  <g transform="translate(40,60)">
+    <rect class="box" x="0" y="0" width="180" height="70"/>
+    <text x="12" y="28" class="small">Dataset</text>
+    <text x="12" y="48" class="small">`123.csv` (url,status,...)</text>
+  </g>
+
+  <!-- Feature extraction -->
+  <g transform="translate(260,55)">
+    <rect class="box" x="0" y="0" width="200" height="80"/>
+    <text x="16" y="28" class="small">Feature Extraction</text>
+    <text x="16" y="48" class="small">URL-derived numeric features</text>
+  </g>
+
+  <!-- Train -->
+  <g transform="translate(500,40)">
+    <rect class="box" x="0" y="0" width="240" height="110"/>
+    <text x="14" y="28" class="small">Train & Evaluate</text>
+    <text x="14" y="48" class="small">RandomForest / ExtraTrees /</text>
+    <text x="14" y="66" class="small">DecisionTree / SVC</text>
+    <text x="14" y="86" class="small">Select best by AUC</text>
+  </g>
+
+  <!-- Model save -->
+  <g transform="translate(780,60)">
+    <rect class="box" x="0" y="0" width="180" height="70"/>
+    <text x="12" y="32" class="small">Save Model</text>
+    <text x="12" y="52" class="small">`best_model.joblib`</text>
+  </g>
+
+  <!-- arrows -->
+  <line x1="220" y1="95" x2="260" y2="95" class="arrow"/>
+  <line x1="460" y1="95" x2="500" y2="95" class="arrow"/>
+  <line x1="740" y1="95" x2="780" y2="95" class="arrow"/>
+
+  <!-- Serve -->
+  <g transform="translate(40,200)">
+    <rect class="box" x="0" y="0" width="260" height="90"/>
+    <text x="12" y="30" class="small">Serve (Flask)</text>
+    <text x="12" y="52" class="small">Endpoint: POST /predict</text>
+    <text x="12" y="72" class="small">Uses imputer + model pipeline</text>
+  </g>
+
+  <!-- Clients -->
+  <g transform="translate(360,200)">
+    <rect class="box" x="0" y="0" width="220" height="90"/>
+    <text x="12" y="30" class="small">Clients</text>
+    <text x="12" y="52" class="small">UI (ui.html) & IoT devices</text>
+    <text x="12" y="72" class="small">simulate_device.py / ESP32</text>
+  </g>
+
+  <!-- History -->
+  <g transform="translate(720,200)">
+    <rect class="box" x="0" y="0" width="260" height="90"/>
+    <text x="12" y="30" class="small">User & Logs</text>
+    <text x="12" y="52" class="small">`users.json` (history) or DB</text>
+    <text x="12" y="72" class="small">request_log, model_info</text>
+  </g>
+
+  <!-- arrows -->
+  <line x1="220" y1="240" x2="360" y2="240" class="arrow"/>
+  <line x1="580" y1="240" x2="720" y2="240" class="arrow"/>
+  <line x1="580" y1="170" x2="580" y2="200" class="arrow"/>
+
+  <!-- Optional detector note -->
+  <rect x="40" y="320" width="1020" height="60" rx="8" fill="#fff6e6" stroke="#d6a800"/>
+  <text x="56" y="345" class="small">Optional: Novelty/Anomaly Detector (IsolationForest) trained on benign URLs to flag unknown / new suspicious sites. Used alongside classifier at /predict.</text>
+
+</svg>

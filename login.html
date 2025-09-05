@@ -1,0 +1,35 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Sign in</title>
+    <style>
+      body{font-family:Inter,Arial,sans-serif;background:#f5f1e6;color:#072146;display:flex;align-items:center;justify-content:center;height:100vh;margin:0}
+      .box{background:#fff8f0;padding:24px;border-radius:12px;box-shadow:0 8px 30px rgba(7,33,70,0.06);width:360px}
+      input{width:100%;padding:10px;margin-top:8px;border-radius:8px;border:1px solid #efe6d6}
+      button{background:#072146;color:#fff;padding:10px 12px;border-radius:8px;border:none;margin-top:12px;width:100%}
+      .muted{color:#7a6b57;font-size:13px;margin-top:8px}
+      a{color:#072146}
+    </style>
+  </head>
+  <body>
+    <div class="box">
+      <h2>Sign in</h2>
+      <input id="username" placeholder="Username or email" />
+      <input id="password" type="password" placeholder="Password" />
+      <button id="btn">Sign in</button>
+      <div class="muted">New? <a href="signup.html">Create an account</a></div>
+      <div id="msg" class="muted"></div>
+    </div>
+    <script>
+      document.getElementById('btn').addEventListener('click', async ()=>{
+        const u = document.getElementById('username').value.trim();
+        const p = document.getElementById('password').value;
+  const res = await fetch('/login', {method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p})});
+        const j = await res.json();
+        if(res.ok){ window.location = '/'; } else { document.getElementById('msg').textContent = j.error || JSON.stringify(j) }
+      })
+    </script>
+  </body>
+</html>

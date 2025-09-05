@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Phish Detector UI</title>
+    <style>
+  :root{--bg:#f5f1e6;--card:#fff8f0;--accent:#072146;--muted:#7a6b57;--danger:#b91c1c;--ok:#0f766e;--warn:#d97706}
+      *{box-sizing:border-box}
+  body{font-family:Inter,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);margin:0;padding:32px;color:var(--accent)}
+      .container{max-width:980px;margin:0 auto}
+      header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+  h1{font-size:22px;margin:0;color:var(--accent)}
+  .card{background:var(--card);border-radius:14px;padding:20px;border:1px solid rgba(7,33,70,0.04);box-shadow:0 8px 30px rgba(7,33,70,0.06)}
+      .form-row{display:flex;gap:10px}
+  input[type=text]{flex:1;padding:12px 14px;border-radius:10px;border:1px solid #efe6d6;font-size:15px;background:#fffdf8}
+  button{background:var(--accent);color:#fff;border:none;padding:10px 16px;border-radius:10px;cursor:pointer;font-weight:600}
+  button.secondary{background:#fff6ea;color:var(--muted);border:1px solid #efe6d6}
+      .result{margin-top:18px;display:flex;gap:18px;align-items:center}
+      .badge{padding:10px 14px;border-radius:12px;font-weight:700;letter-spacing:0.4px}
+  .scorebar{width:260px;height:16px;background:#f6efe0;border-radius:10px;overflow:hidden;border:1px solid rgba(7,33,70,0.04)}
+      .scorefill{height:100%;background:var(--accent);width:0;transition:width 450ms ease, background 300ms ease}
+      .meta{color:var(--muted);font-size:13px}
+      .history{margin-top:18px}
+  .hist-item{display:flex;justify-content:space-between;padding:12px;border-radius:10px;border:1px solid #f3ead6;margin-top:10px;background:#fffdf8}
+  .small{font-size:13px;color:var(--muted)}
+  .spinner{width:18px;height:18px;border:3px solid #e9e6e0;border-top-color:var(--accent);border-radius:50%;animation:spin 1s linear infinite;display:inline-block}
+      @keyframes spin{to{transform:rotate(360deg)}}
+      footer{margin-top:20px;color:#94a3b8;font-size:13px}
+      .center{display:flex;align-items:center}
+      .empty{padding:20px;text-align:center;color:#64748b}
+  /* auth buttons */
+  .auth-btn{padding:8px 12px;border-radius:8px;font-weight:700;text-decoration:none;display:inline-block}
+  .auth-btn.primary{background:var(--accent);color:#fff}
+  .auth-btn.ghost{background:transparent;color:var(--accent);border:1px solid rgba(7,33,70,0.12)}
+      @media (max-width:700px){.form-row{flex-direction:column} .scorebar{width:100%}}
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <div>
+          <h1>Phishing URL tester</h1>
+          <div style="color:var(--muted);font-size:13px;margin-top:6px">Paste a URL and get a quick verdict — works locally on your PC</div>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center">
+          <div id="authArea" style="display:flex;gap:8px;align-items:center">
+            <a id="loginLink" class="auth-btn ghost" href="login.html">Sign in</a>
+            <a id="signupLink" class="auth-btn primary" href="signup.html">Sign up</a>
+            <div id="whoami" style="display:none;color:var(--muted)"></div>
+            <button id="logoutBtn" class="secondary" style="display:none">Logout</button>
+          </div>
+          <button id="clearHistoryBtn" class="secondary" style="display:none">Clear History</button>
+        </div>
+      </header>
+
+      <div class="card">
+        <div class="form-row">
+          <input id="url" type="text" placeholder="Paste URL here (or example: http://www.example.com/login)" />
+          <button id="checkBtn">Check</button>
+          <button id="clearBtn" class="secondary">Clear</button>
+        </div>
+
+        <div id="statusArea" class="result" style="display:none">
+          <div>
+            <div id="verdict" class="badge" style="background:#f3f4f6;color:var(--muted)">Unknown</div>
+            <div class="meta" id="metaDomain"></div>
+          </div>
+          <div>
+            <div class="scorebar" title="Score">
+              <div id="scoreFill" class="scorefill"></div>
+            </div>
+            <div class="small" id="scoreText"></div>
+          </div>
+          <div id="loading" style="display:none"><span class="spinner"></span></div>
+        </div>
+
+        <div class="history">
+          <strong>History</strong>
+          <div id="historyList"></div>
+          <div class="empty" style="display:none" id="emptyHint">No history yet — checks will appear here and persist across refreshes.</div>
+        </div>
+      </div>
+
+      <footer>Tip: use the same Wi‑Fi network address (PC IP) in the ESP32 config to allow the device to query this server.</footer>
+    </div>
+
+    <script>
+  const urlInput = document.getElementById('url');
+      const checkBtn = document.getElementById('checkBtn');
+      const clearBtn = document.getElementById('clearBtn');
+      const statusArea = document.getElementById('statusArea');
+      const verdict = document.getElementById('verdict');
+      const metaDomain = document.getElementById('metaDomain');
+  const scoreFill = document.getElementById('scoreFill');
+  const scoreText = document.getElementById('scoreText');
+  const loading = document.getElementById('loading');
+      const historyList = document.getElementById('historyList');
+  const whoamiEl = document.getElementById('whoami');
+  const loginLink = document.getElementById('loginLink');
+  const signupLink = document.getElementById('signupLink');
+  const logoutBtn = document.getElementById('logoutBtn');
+
+  function setLoading(on){ loading.style.display = on ? 'inline-block' : 'none'; }
+
+      function setResult(pred, score, u){
+        statusArea.style.display = 'flex';
+        // decide risk from score (no percentages shown). Only show PHISHING or SAFE
+        const s = (typeof score === 'number') ? score : (score? Number(score) : 0);
+        scoreFill.style.width = '100%';
+        if(s >= 0.5){ scoreFill.style.background = 'var(--danger)'; verdict.textContent='PHISHING'; verdict.style.background='var(--danger)'; verdict.style.color='#fff'; }
+        else { scoreFill.style.background = 'var(--ok)'; verdict.textContent='SAFE'; verdict.style.background='var(--ok)'; verdict.style.color='#fff'; }
+        scoreText.textContent = '';
+        try{ const d = new URL(u).hostname; metaDomain.textContent = d }catch(e){ metaDomain.textContent = u }
+        pushHistory({url:u,pred:pred,score:score,t:Date.now()});
+      }
+
+      async function pushHistory(item){
+        // if logged in, server will save; still keep local copy for immediate UI
+        const hist = JSON.parse(localStorage.getItem('phish_history')||'[]');
+        hist.unshift(item); if(hist.length>200) hist.pop();
+        localStorage.setItem('phish_history', JSON.stringify(hist)); renderHistory();
+  // Do NOT post to /predict here (that would duplicate server-side history).
+  // For logged-in users the server already saved history when /predict was called.
+      }
+
+      async function renderHistory(){
+        // show server-side history only to logged-in users; hide for anonymous users
+  const who = await fetch('/whoami', {credentials:'same-origin'}).then(r=>r.json()).catch(()=>({}));
+        const emptyHint = document.getElementById('emptyHint');
+        historyList.innerHTML = '';
+        if(!who || !who.username){
+          emptyHint.textContent = 'Sign in to view your saved history.';
+          emptyHint.style.display = 'block';
+          return;
+        }
+        // logged-in: try server history first, fallback to localStorage
+        let hist = [];
+        try{
+          const r = await fetch('/history', {credentials:'same-origin'});
+          if(r.ok){ const j = await r.json(); hist = j.history || []; }
+        }catch(e){ hist = JSON.parse(localStorage.getItem('phish_history')||'[]'); }
+        if(!hist.length){ emptyHint.textContent = 'No history yet — checks will appear here.'; emptyHint.style.display = 'block'; return }
+        emptyHint.style.display = 'none';
+        hist.forEach(h=>{
+          const el = document.createElement('div'); el.className='hist-item';
+          const left = document.createElement('div'); left.innerHTML = `<div style="font-weight:600;max-width:420px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${h.url}</div><div class="small">${new Date(h.t).toLocaleString()}</div>`;
+          const right = document.createElement('div'); right.innerHTML = `<div style="text-align:right">${h.pred==1?'<span style="color:var(--danger);font-weight:700">PHISHING</span>':'<span style="color:var(--ok);font-weight:700">SAFE</span>'}</div>`;
+          el.appendChild(left); el.appendChild(right); historyList.appendChild(el);
+        })
+      }
+
+      async function check(){
+        const url = urlInput.value.trim(); if(!url) return;
+        setLoading(true);
+        try{
+          const res = await fetch('/predict', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url})});
+          if(!res.ok) throw new Error('Server returned ' + res.status);
+          const j = await res.json();
+          setResult(j.prediction, j.score, url);
+        }catch(e){
+          statusArea.style.display = 'flex';
+          verdict.textContent = 'Error'; verdict.style.background = '#f8fafc'; verdict.style.color = 'var(--muted)';
+          metaDomain.textContent = 'Request failed: ' + (e.message || e);
+          scoreFill.style.width = '0%'; scoreText.textContent = '';
+        }finally{ setLoading(false) }
+      }
+
+      checkBtn.addEventListener('click', check);
+  urlInput.addEventListener('keypress', e=>{ if(e.key==='Enter') check(); });
+  clearBtn.addEventListener('click', ()=>{ urlInput.value=''; statusArea.style.display='none'; });
+      const clearHistoryBtn = document.getElementById('clearHistoryBtn');
+      clearHistoryBtn.addEventListener('click', async ()=>{
+        if(!confirm('Clear all saved history? This cannot be undone.')) return;
+        // attempt server-side clear
+        try{
+          const r = await fetch('/clear_history', {method:'POST',credentials:'same-origin'});
+          const j = await r.json().catch(()=>({}));
+          if(r.ok){ localStorage.removeItem('phish_history'); renderHistory(); alert(j.ok? 'History cleared' : 'History cleared') }
+          else { alert('Failed to clear server history: ' + (j.error || r.status)) }
+        }catch(e){ localStorage.removeItem('phish_history'); renderHistory(); alert('Cleared local history') }
+      });
+  logoutBtn.addEventListener('click', async ()=>{ await fetch('/logout', {method:'POST',credentials:'same-origin'}); window.location = '/' });
+
+      // show login state
+      (async ()=>{
+        const who = await fetch('/whoami', {credentials:'same-origin'}).then(r=>r.json()).catch(()=>({}));
+        if(who && who.username){
+          const disp = who.display || who.username;
+          whoamiEl.textContent = disp; whoamiEl.style.display='block'; loginLink.style.display='none'; signupLink.style.display='none'; logoutBtn.style.display='inline-block'; clearHistoryBtn.style.display='inline-block';
+        } else { whoamiEl.style.display='none'; loginLink.style.display='inline-block'; signupLink.style.display='inline-block'; logoutBtn.style.display='none'; clearHistoryBtn.style.display='none' }
+        renderHistory();
+      })();
+    </script>
+  </body>
+</html>

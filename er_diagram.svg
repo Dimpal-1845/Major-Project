@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="700" viewBox="0 0 1200 700">
+  <style>
+    .entity { fill: #fff; stroke: #333; stroke-width: 2 }
+    .title { font: 14px sans-serif; font-weight: bold }
+    .attr { font: 12px sans-serif; }
+    .line { stroke: #333; stroke-width: 2 }
+  </style>
+
+  <text x="20" y="28" font-family="sans-serif" font-weight="bold" font-size="16">ER Diagram: Phishing Detection Data Model</text>
+
+  <!-- Users -->
+  <g transform="translate(40,60)">
+    <rect x="0" y="0" width="300" height="120" rx="6" class="entity"/>
+    <text x="12" y="24" class="title">User</text>
+    <text x="12" y="48" class="attr">user_id : INTEGER (PK)</text>
+    <text x="12" y="68" class="attr">username : TEXT (unique)</text>
+    <text x="12" y="88" class="attr">password_hash : TEXT</text>
+    <text x="12" y="108" class="attr">display_name : TEXT</text>
+  </g>
+
+  <!-- HistoryEntry -->
+  <g transform="translate(380,60)">
+    <rect x="0" y="0" width="360" height="140" rx="6" class="entity"/>
+    <text x="12" y="24" class="title">HistoryEntry</text>
+    <text x="12" y="48" class="attr">history_id : INTEGER (PK)</text>
+    <text x="12" y="68" class="attr">user_id : INTEGER (FK -> User.user_id)</text>
+    <text x="12" y="88" class="attr">url : TEXT</text>
+    <text x="12" y="108" class="attr">prediction : INTEGER</text>
+    <text x="12" y="128" class="attr">score : REAL</text>
+  </g>
+
+  <!-- Models -->
+  <g transform="translate(40,220)">
+    <rect x="0" y="0" width="360" height="120" rx="6" class="entity"/>
+    <text x="12" y="24" class="title">Model</text>
+    <text x="12" y="48" class="attr">model_id : INTEGER (PK)</text>
+    <text x="12" y="68" class="attr">name : TEXT</text>
+    <text x="12" y="88" class="attr">path : TEXT</text>
+    <text x="12" y="108" class="attr">metrics : TEXT (JSON)</text>
+  </g>
+
+  <!-- RequestLog -->
+  <g transform="translate(420,240)">
+    <rect x="0" y="0" width="420" height="200" rx="6" class="entity"/>
+    <text x="12" y="24" class="title">RequestLog</text>
+    <text x="12" y="48" class="attr">request_id : INTEGER (PK)</text>
+    <text x="12" y="68" class="attr">source_type : TEXT ('device'|'user'|'sim') </text>
+    <text x="12" y="88" class="attr">source_id : TEXT</text>
+    <text x="12" y="108" class="attr">url : TEXT</text>
+    <text x="12" y="128" class="attr">features : TEXT (JSON)</text>
+    <text x="12" y="148" class="attr">prediction : INTEGER</text>
+    <text x="12" y="168" class="attr">score : REAL</text>
+  </g>
+
+  <!-- Relationships -->
+  <line x1="340" y1="120" x2="380" y2="80" class="line" marker-end="url(#arrow)"/>
+  <text x="320" y="100" class="attr">1..* </text>
+
+  <line x1="220" y1="260" x2="460" y2="300" class="line"/>
+  <text x="320" y="285" class="attr">Model used by Requests</text>
+
+  <!-- Arrow marker definition -->
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#333" />
+    </marker>
+  </defs>
+
+</svg>

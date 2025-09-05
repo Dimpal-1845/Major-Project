@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="500" viewBox="0 0 1200 500">
+  <style>
+    .actor { font: 14px sans-serif; fill: #111 }
+    .usecase { fill: #f7f7ff; stroke: #556; stroke-width: 2 }
+    .line { stroke: #333; stroke-width: 2 }
+    .note { font: 12px sans-serif; fill: #222 }
+  </style>
+
+  <!-- Actors -->
+  <g transform="translate(40,60)">
+    <circle cx="40" cy="30" r="18" fill="#fff" stroke="#333" stroke-width="2"/>
+    <rect x="22" y="48" width="36" height="48" rx="6" ry="6" fill="#fff" stroke="#333" stroke-width="2"/>
+    <text x="0" y="120" class="actor">End User</text>
+  </g>
+
+  <g transform="translate(40,220)">
+    <circle cx="40" cy="30" r="18" fill="#fff" stroke="#333" stroke-width="2"/>
+    <rect x="22" y="48" width="36" height="48" rx="6" ry="6" fill="#fff" stroke="#333" stroke-width="2"/>
+    <text x="0" y="120" class="actor">IoT Device</text>
+  </g>
+
+  <g transform="translate(40,360)">
+    <circle cx="40" cy="30" r="18" fill="#fff" stroke="#333" stroke-width="2"/>
+    <rect x="22" y="48" width="36" height="48" rx="6" ry="6" fill="#fff" stroke="#333" stroke-width="2"/>
+    <text x="0" y="120" class="actor">Admin</text>
+  </g>
+
+  <!-- Use cases -->
+  <g transform="translate(320,40)">
+    <ellipse cx="260" cy="40" rx="160" ry="30" class="usecase"/>
+    <text x="200" y="46" font-family="sans-serif" font-size="14">Submit URL for check</text>
+
+    <ellipse cx="260" cy="120" rx="120" ry="26" class="usecase"/>
+    <text x="210" y="126" font-family="sans-serif" font-size="14">Return prediction</text>
+
+    <ellipse cx="260" cy="200" rx="90" ry="24" class="usecase"/>
+    <text x="235" y="206" font-family="sans-serif" font-size="14">View history</text>
+
+    <ellipse cx="260" cy="280" rx="90" ry="24" class="usecase"/>
+    <text x="230" y="286" font-family="sans-serif" font-size="14">Signup / Login</text>
+
+    <ellipse cx="260" cy="360" rx="120" ry="26" class="usecase"/>
+    <text x="205" y="366" font-family="sans-serif" font-size="14">Train models / Save best model</text>
+  </g>
+
+  <!-- Connections -->
+  <line x1="100" y1="80" x2="200" y2="48" class="line"/>
+  <line x1="100" y1="240" x2="200" y2="110" class="line"/>
+  <line x1="100" y1="400" x2="200" y2="360" class="line"/>
+
+  <!-- Notes -->
+  <rect x="680" y="40" width="420" height="120" rx="6" ry="6" fill="#fff" stroke="#999"/>
+  <text x="695" y="64" class="note">Primary flows:</text>
+  <text x="695" y="84" class="note">- Devices and Users POST to /predict</text>
+  <text x="695" y="104" class="note">- Admin runs training script to update model</text>
+  <text x="695" y="124" class="note">- Logged-in users view personal history</text>
+
+  <!-- Title -->
+  <text x="20" y="20" font-family="sans-serif" font-weight="bold" font-size="16">Use-Case Diagram: Phishing Detection System</text>
+</svg>

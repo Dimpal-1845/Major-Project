@@ -1,0 +1,34 @@
+{
+  "dimpal": {
+    "pw": "scrypt:32768:8:1$9ESEPtoSzJAWsdSD$db4dbe52877f2fc0e8d33540e0343e71967f647fdff242678455049a09c46cfc9cd60cdb7ee1fde140f0b291076e20aedf11de15a981bb65d607a3ddff83f5fe",
+    "history": [
+      {
+        "url": "https://www.facebook.com/",
+        "pred": 0,
+        "score": 0.49,
+        "t": 1756548269034
+      },
+      {
+        "url": "https://facebook.com/",
+        "pred": 1,
+        "score": 0.59,
+        "t": 1756548262200
+      }
+    ]
+  },
+  "darzyd11@gmail.com": {
+    "pw": "scrypt:32768:8:1$MR70StZJXDrn4D6b$45edcb252c2e61ed77f8969f62baea82e2b9668e43b5528a9071b407b7d619e63b85316d6465ada6bf7be5271e1f0d12c798d4349aa3d5d0e47470aff25d31bd",
+    "history": [],
+    "display": "Darzyd11"
+  },
+  "ABC": {
+    "pw": "scrypt:32768:8:1$BXcw5sgiKBem1yXJ$893106a66b15135d49c8c301ef68c3b6d493096f2ad3a3f6a808a0a1431daa2c484003f09cfdd2580ab90017339644c294dd779cf0c070352009d7af9200091e",
+    "history": [],
+    "display": "ABC"
+  },
+  "hiteksha": {
+    "pw": "scrypt:32768:8:1$3YdN5tyjuLIKJfOk$5183f93d5829fba6574b109452e251f59c20036344d7cf49e73ed79638f7fd566c99143293ff1453dd8dfad5e7325e8aeda19de4274cecb862ced635f645bb19",
+    "history": [],
+    "display": "HITEKSHA"
+  }
+}
